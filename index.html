@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -10,7 +11,7 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
   <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
-  
+
   
 </head>
 <body>
@@ -41,49 +42,26 @@
   <main>
     <center>
       <div class="section"></div>
-      <h1>Starter App</h1>
-      <h5 >Login/Register</h5>
-      <div class="section"></div>
+      <h1>Timer App</h1>
+   
 
-      <div class="container">
-        <div id ="login_page" class="z-depth-1 grey lighten-4 row" style="display: inline-block; padding: 32px 48px 0px 48px; border: 1px solid #EEE;">
-
-         
-            <div class='row'>
-              <div class='col s12'>
-              </div>
-            </div>
-
-            <div class='row'>
-              <div class='input-field'>
-                <input class='validate' type='email' name='email' id='input_email' />
-                <label for='email'>Enter your email</label>
-              </div>
-            </div>
-
-            <div class='row'>
-              <div class='input-field'>
-                <input class='validate' type='password' name='password' id='input_password' />
-                <label for='password'>Enter your password</label>
-              </div>
-          
-            </div>
-
-            <br />
-            <center>
-              <div class='row'>
-
-                <button name='btn_login' type = "submit" class='col s12 btn btn-large waves-effect red darken-3' onclick="alzheimers_firebase_loginUser()" type='submit'>Login</button>
-                </div>
-                 <div class='row'>
-               <a href="register.html" id="btn_registerRedirect" class="col s12 btn btn-large waves-effect red darken-3">Register</a></button>
-                </div>
-               
-              </div>
-            </center>
-          
+        <div class="timer">
+		<h2>
+		
+            <span class="hour">00</span>:<span class="minute">00</span>:<span class="second">00</span></h2>
         </div>
-      </div>
+        <div class="control">
+            <button class = "btn-large waves-effect waves-light red darken-3" onClick="timer.start(1000)">Start</button> 
+            <button class = "btn-large waves-effect waves-light red darken-3"  onClick="timer.stop()">Stop</button> 
+			<div class ="container">
+			<h4>Set timer in seconds:</h4>
+			<input id = "num"></input>
+			</div>
+            <button class = "btn-large waves-effect waves-light red darken-3"  onClick="setTimer()">Set</button> 
+            <button class = "btn-large waves-effect waves-light red darken-3"  onClick="timer.mode(1)">Count up</button> 
+            <button class = "btn-large waves-effect waves-light red darken-3"  onClick="timer.mode(0)">Count down</button>
+        </div>
+    
       
     </center>
 
@@ -113,7 +91,130 @@
   </script>
 
   <script>
+  function setTimer() {
+	var n = document.getElementById("num").value;
+	timer.reset(n);
 
+  }
+function _timer(callback)
+{
+    var time = 0;     //  The default time of the timer
+    var mode = 1;     //    Mode: count up or count down
+    var status = 0;    //    Status: timer is running or stoped
+    var timer_id;    //    This is used by setInterval function
+    
+    // this will start the timer ex. start the timer with 1 second interval timer.start(1000) 
+    this.start = function(interval)
+    {
+        interval = (typeof(interval) !== 'undefined') ? interval : 1000;
+ 
+        if(status == 0)
+        {
+            status = 1;
+            timer_id = setInterval(function()
+            {
+                switch(mode)
+                {
+                    default:
+                    if(time)
+                    {
+                        time--;
+                        generateTime();
+                        if(typeof(callback) === 'function') callback(time);
+                    }
+                    break;
+                    
+                    case 1:
+                    if(time < 86400)
+                    {
+                        time++;
+                        generateTime();
+                        if(typeof(callback) === 'function') callback(time);
+                    }
+                    break;
+                }
+            }, interval);
+        }
+    }
+    
+    //  Same as the name, this will stop or pause the timer ex. timer.stop()
+    this.stop =  function()
+    {
+        if(status == 1)
+        {
+            status = 0;
+            clearInterval(timer_id);
+        }
+    }
+    
+    // Reset the timer to zero or reset it to your own custom time ex. reset to zero second timer.reset(0)
+    this.reset =  function(sec)
+    {
+        sec = (typeof(sec) !== 'undefined') ? sec : 0;
+        time = sec;
+        generateTime(time);
+    }
+    
+    // Change the mode of the timer, count-up (1) or countdown (0)
+    this.mode = function(tmode)
+    {
+        mode = tmode;
+    }
+    
+    // This methode return the current value of the timer
+    this.getTime = function()
+    {
+        return time;
+    }
+    
+    // This methode return the current mode of the timer count-up (1) or countdown (0)
+    this.getMode = function()
+    {
+        return mode;
+    }
+    
+    // This methode return the status of the timer running (1) or stoped (1)
+    this.getStatus
+    {
+        return status;
+    }
+    
+    // This methode will render the time variable to hour:minute:second format
+    function generateTime()
+    {
+        var second = time % 60;
+        var minute = Math.floor(time / 60) % 60;
+        var hour = Math.floor(time / 3600) % 60;
+        
+        second = (second < 10) ? '0'+second : second;
+        minute = (minute < 10) ? '0'+minute : minute;
+        hour = (hour < 10) ? '0'+hour : hour;
+        
+        $('div.timer span.second').html(second);
+        $('div.timer span.minute').html(minute);
+        $('div.timer span.hour').html(hour);
+    }
+}
+ 
+// example use
+var timer;
+ 
+$(document).ready(function(e) 
+{
+    timer = new _timer
+    (
+        function(time)
+        {
+            if(time == 0)
+            {
+                timer.stop();
+                alert('time out');
+            }
+        }
+    );
+    timer.reset(0);
+    timer.mode(0);
+});
   </script>
 
 
